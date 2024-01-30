@@ -1,8 +1,8 @@
 {
-    "name": "IVLab.Template.Editor",
+    "name": "IVLab.MinVR3.Spout.Editor",
     "rootNamespace": "",
     "references": [
-        "IVLab.Template.Runtime"
+        "IVLab.MinVR3.Spout.Runtime"
     ],
     "includePlatforms": [
         "Editor"
