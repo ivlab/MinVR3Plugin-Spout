@@ -2,7 +2,11 @@
     "name": "IVLab.MinVR3.Spout.Editor",
     "rootNamespace": "",
     "references": [
-        "IVLab.MinVR3.Spout.Runtime"
+        "IVLab.MinVR3.Spout.Runtime",
+        "IVLab.MinVR3.Editor",
+        "IVLab.MinVR3.Runtime",
+        "IVLab.MinVR3.VRPN.Editor",
+        "IVLab.MinVR3.VRPN.Runtime"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,6 +17,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "edu.umn.cs.ivlab.minvr3.vrpn",
+            "expression": "0",
+            "define": "MINVR3_HAS_VRPN_PLUGIN"
+        }
+    ],
     "noEngineReferences": false
 }
