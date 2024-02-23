@@ -6,7 +6,7 @@ namespace Klak.Spout {
 //
 // Spout sender class (main implementation)
 //
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 [AddComponentMenu("Klak/Spout/Spout Sender")]
 public sealed partial class SpoutSender : MonoBehaviour
 {

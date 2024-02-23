@@ -19,10 +19,19 @@ namespace IVLab.MinVR3.Spout
         private const string VRConfigName = "VRConfig_UMNCave via Spout";
 
         // Tracking details
+        private const string MotiveServerIp = "127.0.0.1";
+
         private const string HeadVrpnDeviceName = "head";
-        private const string MotiveServerIp = "10.0.50.203";
         private const string HeadPositionEventName = "Head/Position";
         private const string HeadRotationEventName = "Head/Rotation";
+
+        private const string WandVrpnDeviceName = "wand";
+        private const string WandPositionEventName = "Wand/Position";
+        private const string WandRotationEventName = "Wand/Rotation";
+
+        private const string PenVrpnDeviceName = "pen";
+        private const string PenPositionEventName = "Pen/Position";
+        private const string PenRotationEventName = "Pen/Rotation";
 
         // Spout will render to two textures, the first contains the imagery for all four walls
         // for the left eye, and the second contains all four walls for the right eye.
@@ -140,6 +149,38 @@ namespace IVLab.MinVR3.Spout
             trackerHead.minVR3RotationEventName = HeadRotationEventName;
             trackerHead.vrpnDevice = HeadVrpnDeviceName;
             trackerHead.vrpnServer = MotiveServerIp;
+
+
+            VRPNTracker trackerWand = MenuHelpers.CreateAndPlaceGameObject("VRPN Tracker '" + WandVrpnDeviceName + "'", inputDevObj, typeof(VRPNTracker)).GetComponent<VRPNTracker>();
+
+            // Motive tracking is right-handed y-up
+            trackerHead.incomingCoordinateSystem = new CoordConversion.CoordSystem
+            (
+                CoordConversion.CoordSystem.Handedness.RightHanded,
+                CoordConversion.CoordSystem.Axis.PosY,
+                CoordConversion.CoordSystem.Axis.NegZ
+            );
+            trackerHead.minVR3PositionEventName = WandPositionEventName;
+            trackerHead.minVR3RotationEventName = WandRotationEventName;
+            trackerHead.vrpnDevice = WandVrpnDeviceName;
+            trackerHead.vrpnServer = MotiveServerIp;
+
+            VRPNTracker trackerPen = MenuHelpers.CreateAndPlaceGameObject("VRPN Tracker '" + PenVrpnDeviceName + "'", inputDevObj, typeof(VRPNTracker)).GetComponent<VRPNTracker>();
+
+            // Motive tracking is right-handed y-up
+            trackerHead.incomingCoordinateSystem = new CoordConversion.CoordSystem
+            (
+                CoordConversion.CoordSystem.Handedness.RightHanded,
+                CoordConversion.CoordSystem.Axis.PosY,
+                CoordConversion.CoordSystem.Axis.NegZ
+            );
+            trackerHead.minVR3PositionEventName = PenPositionEventName;
+            trackerHead.minVR3RotationEventName = PenRotationEventName;
+            trackerHead.vrpnDevice = PenVrpnDeviceName;
+            trackerHead.vrpnServer = MotiveServerIp;
+
+
+
 #else
             Debug.LogWarning("MinVR3 VRPN plugin not found. Please install the plugin or select a different source for the perspective tracking events.");
 #endif
@@ -206,7 +247,7 @@ namespace IVLab.MinVR3.Spout
 
 
             // VRCONFIG -> DISPLAY DEVICES -> Cave Camera Rig
-            GameObject cameraRigObj = MenuHelpers.CreateAndPlaceGameObject("Cave Camera Rig", displayDevObj, typeof(TrackedPoseDriver),typeof(CameraRigProjectionSettings));
+            GameObject cameraRigObj = MenuHelpers.CreateAndPlaceGameObject("Cave Camera Rig", displayDevObj, typeof(TrackedPoseDriver),typeof(CameraRigSettings));
             TrackedPoseDriver tpd = cameraRigObj.GetComponent<TrackedPoseDriver>();
             tpd.positionEvent = VREventPrototypeVector3.Create(HeadPositionEventName);
             tpd.rotationEvent = VREventPrototypeQuaternion.Create(HeadRotationEventName);
