@@ -136,49 +136,81 @@ namespace IVLab.MinVR3.Spout
             // define to work. MINVR3_HAS_VRPN_PLUGIN should be defined if any version of the MinVR3
             // VRPN plugin is available, then this script can create the appropriate tracking devices.
 #if MINVR3_HAS_VRPN_PLUGIN
-            VRPNTracker trackerHead = MenuHelpers.CreateAndPlaceGameObject("VRPN Tracker 'head'", inputDevObj, typeof(VRPNTracker)).GetComponent<VRPNTracker>();
 
-            // Motive tracking is right-handed y-up
-            trackerHead.incomingCoordinateSystem = new CoordConversion.CoordSystem
-            (
+
+            // VRPN Head Tracker
+            GameObject headObj = MenuHelpers.CreateAndPlaceGameObject(
+                "VRPN Tracker '" + HeadVrpnDeviceName + "'",
+                inputDevObj,
+                typeof(VRPNTracker),
+                typeof(TrackedHeadPoseDriver)
+            );
+
+            VRPNTracker headVrpn = headObj.GetComponent<VRPNTracker>();
+            headVrpn.incomingCoordinateSystem = new CoordConversion.CoordSystem
+            (   // Motive tracking is right-handed y-up
                 CoordConversion.CoordSystem.Handedness.RightHanded,
                 CoordConversion.CoordSystem.Axis.PosY,
                 CoordConversion.CoordSystem.Axis.NegZ
             );
-            trackerHead.minVR3PositionEventName = HeadPositionEventName;
-            trackerHead.minVR3RotationEventName = HeadRotationEventName;
-            trackerHead.vrpnDevice = HeadVrpnDeviceName;
-            trackerHead.vrpnServer = MotiveServerIp;
+            headVrpn.minVR3PositionEventName = HeadPositionEventName;
+            headVrpn.minVR3RotationEventName = HeadRotationEventName;
+            headVrpn.vrpnDevice = HeadVrpnDeviceName;
+            headVrpn.vrpnServer = MotiveServerIp;
 
+            TrackedHeadPoseDriver headPoseDriver = headObj.GetComponent<TrackedHeadPoseDriver>();
+            headPoseDriver.positionEvent = VREventPrototypeVector3.Create(HeadPositionEventName);
+            headPoseDriver.rotationEvent = VREventPrototypeQuaternion.Create(HeadRotationEventName);
 
-            VRPNTracker trackerWand = MenuHelpers.CreateAndPlaceGameObject("VRPN Tracker '" + WandVrpnDeviceName + "'", inputDevObj, typeof(VRPNTracker)).GetComponent<VRPNTracker>();
+            // VRPN Wand Tracker
+            GameObject wandObj = MenuHelpers.CreateAndPlaceGameObject(
+                "VRPN Tracker '" + WandVrpnDeviceName + "'",
+                inputDevObj,
+                typeof(VRPNTracker),
+                typeof(TrackedPoseDriver)
+            );
 
-            // Motive tracking is right-handed y-up
-            trackerHead.incomingCoordinateSystem = new CoordConversion.CoordSystem
-            (
+            VRPNTracker wandVrpn = wandObj.GetComponent<VRPNTracker>();
+            wandVrpn.incomingCoordinateSystem = new CoordConversion.CoordSystem
+            (   // Motive tracking is right-handed y-up
                 CoordConversion.CoordSystem.Handedness.RightHanded,
                 CoordConversion.CoordSystem.Axis.PosY,
                 CoordConversion.CoordSystem.Axis.NegZ
             );
-            trackerHead.minVR3PositionEventName = WandPositionEventName;
-            trackerHead.minVR3RotationEventName = WandRotationEventName;
-            trackerHead.vrpnDevice = WandVrpnDeviceName;
-            trackerHead.vrpnServer = MotiveServerIp;
+            wandVrpn.minVR3PositionEventName = WandPositionEventName;
+            wandVrpn.minVR3RotationEventName = WandRotationEventName;
+            wandVrpn.vrpnDevice = WandVrpnDeviceName;
+            wandVrpn.vrpnServer = MotiveServerIp;
 
-            VRPNTracker trackerPen = MenuHelpers.CreateAndPlaceGameObject("VRPN Tracker '" + PenVrpnDeviceName + "'", inputDevObj, typeof(VRPNTracker)).GetComponent<VRPNTracker>();
+            TrackedPoseDriver wandPoseDriver = wandObj.GetComponent<TrackedPoseDriver>();
+            wandPoseDriver.positionEvent = VREventPrototypeVector3.Create(WandPositionEventName);
+            wandPoseDriver.rotationEvent = VREventPrototypeQuaternion.Create(WandRotationEventName);
 
-            // Motive tracking is right-handed y-up
-            trackerHead.incomingCoordinateSystem = new CoordConversion.CoordSystem
-            (
+            // VRPN Pen Tracker
+            GameObject penObj = MenuHelpers.CreateAndPlaceGameObject(
+                "VRPN Tracker '" + PenVrpnDeviceName + "'",
+                inputDevObj,
+                typeof(VRPNTracker),
+                typeof(TrackedPoseDriver)
+            );
+
+            VRPNTracker penVrpn = penObj.GetComponent<VRPNTracker>();
+            penVrpn.incomingCoordinateSystem = new CoordConversion.CoordSystem
+            (   // Motive tracking is right-handed y-up
                 CoordConversion.CoordSystem.Handedness.RightHanded,
                 CoordConversion.CoordSystem.Axis.PosY,
                 CoordConversion.CoordSystem.Axis.NegZ
             );
-            trackerHead.minVR3PositionEventName = PenPositionEventName;
-            trackerHead.minVR3RotationEventName = PenRotationEventName;
-            trackerHead.vrpnDevice = PenVrpnDeviceName;
-            trackerHead.vrpnServer = MotiveServerIp;
+            penVrpn.minVR3PositionEventName = PenPositionEventName;
+            penVrpn.minVR3RotationEventName = PenRotationEventName;
+            penVrpn.vrpnDevice = PenVrpnDeviceName;
+            penVrpn.vrpnServer = MotiveServerIp;
 
+            TrackedPoseDriver penPoseDriver = penObj.GetComponent<TrackedPoseDriver>();
+            penPoseDriver.positionEvent = VREventPrototypeVector3.Create(PenPositionEventName);
+            penPoseDriver.rotationEvent = VREventPrototypeQuaternion.Create(PenRotationEventName);
+
+            // TODO: Add VRPN Button devices
 
 
 #else
@@ -208,14 +240,16 @@ namespace IVLab.MinVR3.Spout
 
             Camera leftCompositeCamera = leftEyeSenderObj.GetComponent<Camera>();
             leftCompositeCamera.targetTexture = leftCompositeRT;
-            leftCompositeCamera.depth = 5;
+            leftCompositeCamera.depth = 1;
             leftCompositeCamera.clearFlags = CameraClearFlags.Color;
             leftCompositeCamera.backgroundColor = Color.black;
 
-            SpoutSender leftSpout = leftEyeSenderObj.GetComponent<SpoutSender>();
-            leftSpout.spoutName = SpoutLeftEyeSourceName;
-            leftSpout.captureMethod = CaptureMethod.Texture;
-            leftSpout.sourceTexture = leftCompositeRT;
+            SpoutSender leftSpoutSender = leftEyeSenderObj.GetComponent<SpoutSender>();
+            leftSpoutSender.spoutName = SpoutLeftEyeSourceName;
+            leftSpoutSender.captureMethod = CaptureMethod.Texture;
+            leftSpoutSender.sourceTexture = leftCompositeRT;
+
+            // note: one StampTextureOnScreen per wall will also be added later when iterating through the walls
 
 
             GameObject rightEyeSenderObj = MenuHelpers.CreateAndPlaceGameObject("Right Eye Image", spoutSendersObj, typeof(Camera), typeof(SpoutSender));
@@ -226,13 +260,17 @@ namespace IVLab.MinVR3.Spout
             rightCompositeCamera.clearFlags = CameraClearFlags.Color;
             rightCompositeCamera.backgroundColor = Color.black;
 
-            SpoutSender rightSpout = rightEyeSenderObj.GetComponent<SpoutSender>();
-            rightSpout.spoutName = SpoutRightEyeSourceName;
-            rightSpout.captureMethod = CaptureMethod.Texture;
-            rightSpout.sourceTexture = rightCompositeRT;
+            SpoutSender rightSpoutSender = rightEyeSenderObj.GetComponent<SpoutSender>();
+            rightSpoutSender.spoutName = SpoutRightEyeSourceName;
+            rightSpoutSender.captureMethod = CaptureMethod.Texture;
+            rightSpoutSender.sourceTexture = rightCompositeRT;
+
+            // note: one StampTextureOnScreen per wall will also be added later when iterating through the walls
+
 
 
             // VRCONFIG -> DISPLAY DEVICES -> Projection Screen Geometry
+
             GameObject projScreensObj = MenuHelpers.CreateAndPlaceGameObject("Projection Screen Geometry", displayDevObj);
             GameObject[] wallObjs = new GameObject[WallNames.Length];
             for (int i = 0; i < WallNames.Length; i++) {
@@ -242,15 +280,12 @@ namespace IVLab.MinVR3.Spout
                 wallObjs[i].transform.localScale = WallScales[i];
                 wallObjs[i].GetComponent<Renderer>().material.color = WallColors[i];
             }
-            // hide the geometry for the walls -- we don't generally want to draw them
-            projScreensObj.SetActive(false);
+
 
 
             // VRCONFIG -> DISPLAY DEVICES -> Cave Camera Rig
-            GameObject cameraRigObj = MenuHelpers.CreateAndPlaceGameObject("Cave Camera Rig", displayDevObj, typeof(TrackedPoseDriver),typeof(CameraRigSettings));
-            TrackedPoseDriver tpd = cameraRigObj.GetComponent<TrackedPoseDriver>();
-            tpd.positionEvent = VREventPrototypeVector3.Create(HeadPositionEventName);
-            tpd.rotationEvent = VREventPrototypeQuaternion.Create(HeadRotationEventName);
+            GameObject cameraRigObj = MenuHelpers.CreateAndPlaceGameObject("Cave Camera Rig", displayDevObj, typeof(CameraRigSettings));
+
 
             // Add two cameras (left and right eyes) for each wall
             float viewportWidth = 1.0f / (float)WallNames.Length;
@@ -274,9 +309,9 @@ namespace IVLab.MinVR3.Spout
                 leftCam.clearFlags = CameraClearFlags.SolidColor;
                 leftCam.backgroundColor = Color.black;
                 ObliqueProjectionToQuad leftProj = leftEyeObj.GetComponent<ObliqueProjectionToQuad>();
-                leftProj.applyStereoEyeOffset = true;
-                leftProj.whichEye = ObliqueProjectionToQuad.Eye.LeftEye;
                 leftProj.projectionScreenQuad = wallObjs[i];
+                leftProj.trackedHeadPoseDriver = headPoseDriver;
+                leftProj.whichEye = ObliqueProjectionToQuad.Eye.LeftEye;
 
                 StampTextureOnScreen leftTexCopier = leftEyeSenderObj.AddComponent<StampTextureOnScreen>();
                 leftTexCopier.stampTexture = wallLeftRT;
@@ -302,10 +337,9 @@ namespace IVLab.MinVR3.Spout
                 rightCam.clearFlags = CameraClearFlags.SolidColor;
                 rightCam.backgroundColor = Color.black;
                 ObliqueProjectionToQuad rightProj = rightEyeObj.GetComponent<ObliqueProjectionToQuad>();
-                rightProj.applyStereoEyeOffset = true;
-                rightProj.whichEye = ObliqueProjectionToQuad.Eye.RightEye;
                 rightProj.projectionScreenQuad = wallObjs[i];
-
+                rightProj.trackedHeadPoseDriver = headPoseDriver;
+                rightProj.whichEye = ObliqueProjectionToQuad.Eye.RightEye;
 
                 StampTextureOnScreen rightTexCopier = rightEyeSenderObj.AddComponent<StampTextureOnScreen>();
                 rightTexCopier.stampTexture = wallRightRT;
@@ -313,24 +347,64 @@ namespace IVLab.MinVR3.Spout
                 rightTexCopier.botRightCornerUV = new Vector2(viewportWidth * (i + 1), 0);
             }
 
-            // VRCONFIG -> DISPLAY DEVICES -> Debug Camera
-            GameObject debugCamObj = MenuHelpers.CreateAndPlaceGameObject("Debug Camera", displayDevObj, typeof(Camera));
-            Camera debugCam = debugCamObj.GetComponent<Camera>();
-            debugCam.clearFlags = CameraClearFlags.Color;
-            debugCam.backgroundColor = Color.black;
+            // VRCONFIG -> DISPLAY DEVICES -> Game Window Camera
+            GameObject gameWinCamObj = MenuHelpers.CreateAndPlaceGameObject("Debug Camera", displayDevObj, typeof(Camera), typeof(DrawFPS));
+            Camera gameWinCam = gameWinCamObj.GetComponent<Camera>();
+            gameWinCam.clearFlags = CameraClearFlags.Color;
+            gameWinCam.backgroundColor = Color.black;
 
-            StampTextureOnScreen leftDebugTexCopier = debugCamObj.AddComponent<StampTextureOnScreen>();
+            StampTextureOnScreen leftDebugTexCopier = gameWinCamObj.AddComponent<StampTextureOnScreen>();
             leftDebugTexCopier.stampTexture = leftCompositeRT;
             leftDebugTexCopier.topLeftCornerUV = new Vector2(0, 1);
             leftDebugTexCopier.botRightCornerUV = new Vector2(1, 0.5f);
 
-            StampTextureOnScreen rightDebugTexCopier = debugCamObj.AddComponent<StampTextureOnScreen>();
+            StampTextureOnScreen rightDebugTexCopier = gameWinCamObj.AddComponent<StampTextureOnScreen>();
             rightDebugTexCopier.stampTexture = rightCompositeRT;
             rightDebugTexCopier.topLeftCornerUV = new Vector2(0, 0.5f);
             rightDebugTexCopier.botRightCornerUV = new Vector2(1, 0);
 
-            debugCamObj.SetActive(false);
+            DrawSpoutSenderInfo leftInfo = gameWinCamObj.AddComponent<DrawSpoutSenderInfo>();
+            leftInfo.sender = leftSpoutSender;
+            leftInfo.m_FontSize = 24;
+            leftInfo.m_TextAnchor = TextAnchor.UpperLeft;
+            leftInfo.m_Position = new Rect(0.01f, 0.03f, 1, 0.1f);
+
+            DrawSpoutSenderInfo rightInfo = gameWinCamObj.AddComponent<DrawSpoutSenderInfo>();
+            rightInfo.sender = rightSpoutSender;
+            rightInfo.m_FontSize = 24;
+            rightInfo.m_TextAnchor = TextAnchor.UpperLeft;
+            rightInfo.m_Position = new Rect(0.01f, 0.03f, 1, 0.1f);
+
+
+            // VRCONFIG->Cave Debug Graphics
+            GameObject debugGfxObj = MenuHelpers.CreateAndPlaceGameObject("Cave Debug Graphics", vrConfigObj);
+
+            // VRCONFIG->Cave Debug Graphics->Eyes Projected on Walls
+            GameObject eyesOnWallsObj = MenuHelpers.CreateAndPlaceGameObject("Eyes Projected on Walls", debugGfxObj);
+
+            for (int i = 0; i < wallObjs.Length; i++) {
+                DrawEyes drawEyesForWall = eyesOnWallsObj.AddComponent<DrawEyes>();
+                drawEyesForWall.headPoseDriver = headPoseDriver;
+                drawEyesForWall.projectionScreenQuad = wallObjs[i];
+            }
+
+            // VRCONFIG->Cave Debug Graphics->Tracker Axes
+            GameObject trackerAxesObj = MenuHelpers.CreateAndPlaceGameObject("Tracker Axes", debugGfxObj, typeof(DrawTrackers));
+            DrawTrackers drawTrackers = trackerAxesObj.GetComponent<DrawTrackers>();
+
+            DrawTrackers.TrackerDescription wandDesc = new DrawTrackers.TrackerDescription();
+            wandDesc.displayName = "Wand";
+            wandDesc.positionEvent = VREventPrototypeVector3.Create(WandPositionEventName);
+            wandDesc.rotationEvent = VREventPrototypeQuaternion.Create(WandRotationEventName);
+            drawTrackers.trackers.Add(wandDesc);
+
+            DrawTrackers.TrackerDescription penDesc = new DrawTrackers.TrackerDescription();
+            penDesc.displayName = "Pen";
+            penDesc.positionEvent = VREventPrototypeVector3.Create(PenPositionEventName);
+            penDesc.rotationEvent = VREventPrototypeQuaternion.Create(PenRotationEventName);
+            drawTrackers.trackers.Add(penDesc);
         }
+
 
     } // end class
 
