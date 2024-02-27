@@ -348,10 +348,11 @@ namespace IVLab.MinVR3.Spout
             }
 
             // VRCONFIG -> DISPLAY DEVICES -> Game Window Camera
-            GameObject gameWinCamObj = MenuHelpers.CreateAndPlaceGameObject("Debug Camera", displayDevObj, typeof(Camera), typeof(DrawFPS));
+            GameObject gameWinCamObj = MenuHelpers.CreateAndPlaceGameObject("Game Window Camera", displayDevObj, typeof(Camera), typeof(DrawFPS));
             Camera gameWinCam = gameWinCamObj.GetComponent<Camera>();
             gameWinCam.clearFlags = CameraClearFlags.Color;
             gameWinCam.backgroundColor = Color.black;
+            gameWinCam.cullingMask = 0;
 
             StampTextureOnScreen leftDebugTexCopier = gameWinCamObj.AddComponent<StampTextureOnScreen>();
             leftDebugTexCopier.stampTexture = leftCompositeRT;
@@ -373,7 +374,7 @@ namespace IVLab.MinVR3.Spout
             rightInfo.sender = rightSpoutSender;
             rightInfo.m_FontSize = 24;
             rightInfo.m_TextAnchor = TextAnchor.UpperLeft;
-            rightInfo.m_Position = new Rect(0.01f, 0.03f, 1, 0.1f);
+            rightInfo.m_Position = new Rect(0.01f, 0.53f, 1, 0.1f);
 
 
             // VRCONFIG->Cave Debug Graphics
