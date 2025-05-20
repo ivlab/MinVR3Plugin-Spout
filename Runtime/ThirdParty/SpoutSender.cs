@@ -115,9 +115,18 @@ public sealed partial class SpoutSender : MonoBehaviour
         // Camera capture mode
         if (_captureMethod == CaptureMethod.Camera)
         {
-            PrepareCameraCapture(_sourceCamera);
-            if (_sourceCamera == null) return;
-            PrepareBuffer(_sourceCamera.pixelWidth, _sourceCamera.pixelHeight);
+                if (_sourceCamera == null) return;
+                if (_sourceCamera.targetTexture != null)
+                {
+                    _sourceTexture = _sourceCamera.targetTexture;
+                    PrepareBuffer(_sourceTexture.width, _sourceTexture.height);
+                    Blitter.Blit(_resources, _sourceTexture, _buffer, _keepAlpha);
+                }
+                else
+                {
+                    PrepareCameraCapture(_sourceCamera);
+                    PrepareBuffer(_sourceCamera.pixelWidth, _sourceCamera.pixelHeight);
+                }
         }
 
         // Sender lazy initialization
